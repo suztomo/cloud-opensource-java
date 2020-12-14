@@ -8,13 +8,17 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export PATH=$JAVA_HOME/bin:$PATH
 # For Gradle plugin to install ~/.m2/repository
 printenv
+
 export USER_HOME=$HOME
 
-mvn -v
+# $HOME (/github/home/.m2, = /home/runner/work/_temp/_github_home/.m2) is a symbolic link
+ln -s $HOME/.m2 /root/.m2
 
-echo "Building it with Gradle"
+# mvn -v
+
+# echo "Building it with Gradle"
 # This installs user.home system property which is somehow /root in Docker
-./gradlew build publishToMavenLocal -x test -x signMavenJavaPublication
+# ./gradlew build publishToMavenLocal -x test -x signMavenJavaPublication
 
 echo "Content of ~ (empty)"
 ls -al ~/
