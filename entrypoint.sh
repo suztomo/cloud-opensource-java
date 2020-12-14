@@ -13,22 +13,20 @@ export USER_HOME=$HOME
 mvn -v
 
 echo "Building it with Gradle"
-./gradlew --debug build publishToMavenLocal -x test -x signMavenJavaPublication
+# This installs user.home system property which is somehow /root in Docker
+./gradlew build publishToMavenLocal -x test -x signMavenJavaPublication
 
-echo "Content of ~"
+echo "Content of ~ (empty)"
 ls -al ~/
 
-echo "Content of HOME"
+echo "Content of HOME (empty)"
 ls -al $HOME
 
 sleep 2
 
-echo "Content of /root/.m2/repository"
-ls -al /root/
-
-echo "Finding pom files"
-
+echo "Finding pom files under /root/.m2/repository"
 find /root/.m2/repository -name "gax*.pom"
 
-java -jar /cloud-opensource-java/linkage-monitor/target/linkage-monitor-*-all-deps.jar
+java -jar /cloud-opensource-java/linkage-monitor/target/linkage-monitor-*-all-deps.jar \
+    com.google.cloud:libraries-bom
 
