@@ -1,4 +1,4 @@
-FROM ubuntu_latest
+FROM ubuntu:18.04
 
 RUN apt-get -y install git openjdk-8-jdk maven
 
