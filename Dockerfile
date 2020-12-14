@@ -1,5 +1,6 @@
 FROM ubuntu:18.04
 
+RUN apt-get update
 RUN apt-get -y install git openjdk-8-jdk maven
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
