@@ -12,4 +12,4 @@ WORKDIR /cloud-opensource-java
 RUN mvn --batch-mode install -Dmaven.test.skip -Dinvoker.skip
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
-ENTRYPOINT ["/workspace/entrypoint.sh"]
+ENTRYPOINT ["/cloud-opensource-java/entrypoint.sh"]
