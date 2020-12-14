@@ -9,7 +9,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 export
 
 echo "Building it with Gradle"
-./gradlew build publishToMavenLocal -x test -x signMavenJavaPublication
+./gradlew --info build publishToMavenLocal -x test -x signMavenJavaPublication
 
 echo "Content of home:"
 ls -al ~/
