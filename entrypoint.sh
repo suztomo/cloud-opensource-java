@@ -6,13 +6,18 @@ echo "::set-output name=time::$time"
 
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export PATH=$JAVA_HOME/bin:$PATH
-export
+export M2_HOME=$HOME/.m2
+
+mvn -v
 
 echo "Building it with Gradle"
-./gradlew --info build publishToMavenLocal -x test -x signMavenJavaPublication
+./gradlew --debug build publishToMavenLocal -x test -x signMavenJavaPublication
 
-echo "Content of home:"
+echo "Content of ~"
 ls -al ~/
+
+echo "Content of HOME"
+ls -al $HOME
 
 sleep 2
 
