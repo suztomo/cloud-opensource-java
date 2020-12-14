@@ -22,8 +22,12 @@ ls -al $HOME
 
 sleep 2
 
+echo "Content of /root/.m2/repository"
+ls -al $HOME
+
 echo "Finding pom files"
-find $HOME/.m2 -name "gax*.pom"
+
+find /root/.m2/repository -name "gax*.pom"
 
 java -jar /cloud-opensource-java/linkage-monitor/target/linkage-monitor-*-all-deps.jar
 
