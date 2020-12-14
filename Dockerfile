@@ -9,6 +9,7 @@ RUN mkdir -p /cloud-opensource-java
 
 COPY . /cloud-opensource-java
 WORKDIR /cloud-opensource-java
+RUN mkdir /root/.m2 && cp settings.xml /root/.m2/
 RUN mvn --batch-mode --projects 'dependencies,linkage-monitor' install -Dmaven.test.skip -Dinvoker.skip
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
