@@ -2,12 +2,13 @@ FROM ubuntu:18.04
 
 RUN apt-get update
 RUN apt-get -y install git openjdk-8-jdk maven
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 RUN mkdir -p /workspace
 COPY . /workspace
 WORKDIR /workspace
-RUN mvn install -Dmaven.test.skip -Dinvoker.test.skip
+RUN mvn --batch-mode install -Dmaven.test.skip -Dinvoker.test.skip
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
 ENTRYPOINT ["/workspace/entrypoint.sh"]
