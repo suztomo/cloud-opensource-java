@@ -7,6 +7,7 @@ echo "::set-output name=time::$time"
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export PATH=$JAVA_HOME/bin:$PATH
 # For Gradle plugin to install ~/.m2/repository
+printenv
 export USER_HOME=$HOME
 
 mvn -v
@@ -23,7 +24,7 @@ ls -al $HOME
 sleep 2
 
 echo "Content of /root/.m2/repository"
-ls -al $HOME
+ls -al /root/
 
 echo "Finding pom files"
 
