@@ -6,7 +6,8 @@ echo "::set-output name=time::$time"
 
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 export PATH=$JAVA_HOME/bin:$PATH
-export M2_HOME=$HOME/.m2
+# For Gradle plugin to install ~/.m2/repository
+export USER_HOME=$HOME
 
 mvn -v
 
