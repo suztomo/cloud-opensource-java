@@ -9,10 +9,8 @@ export PATH=$JAVA_HOME/bin:$PATH
 # For Gradle plugin to install ~/.m2/repository
 printenv
 
-export USER_HOME=$HOME
-
 # $HOME (/github/home/.m2, = /home/runner/work/_temp/_github_home/.m2) is a symbolic link
-ln -s $HOME/.m2 /root/.m2
+# ln -s $HOME/.m2 /root/.m2
 
 # mvn -v
 
@@ -28,9 +26,16 @@ ls -al $HOME
 
 sleep 2
 
-echo "Finding pom files under /root/.m2/repository"
-find /root/.m2/repository -name "gax*.pom"
+# echo "Finding pom files under /root/.m2/repository"
+# find /root/.m2/repository -name "gax*.pom"
 
-java -jar /cloud-opensource-java/linkage-monitor/target/linkage-monitor-*-all-deps.jar \
+# $HOME is mounted by docker command and .m2 in it is a symbolic link to /home/runner/.m2 (outside
+# the container)
+echo "Finding pom files under $HOME/.m2/repository"
+find $HOME/.m2/repository -name "gax*.pom"
+
+# Java's user.home is not via $HOME by default https://bugs.openjdk.java.net/browse/JDK-7069190
+java -Duser.home=$HOME \
+    -jar /cloud-opensource-java/linkage-monitor/target/linkage-monitor-*-all-deps.jar \
     com.google.cloud:libraries-bom
 
