@@ -31,11 +31,14 @@ sleep 2
 
 # $HOME is mounted by docker command and .m2 in it is a symbolic link to /home/runner/.m2 (outside
 # the container)
-echo "Finding pom files under $HOME/.m2/repository"
+echo "Searching for pom files (gax*.pom) under $HOME/.m2/repository"
 find $HOME/.m2/repository -name "gax*.pom"
 
 echo "Changing directory to $GITHUB_WORKSPACE"
 cd $GITHUB_WORKSPACE
+
+echo "Searching for pom files (pom.xml) under current working directory"
+find . -name 'pom.xml'
 
 # Java's user.home is not via $HOME by default https://bugs.openjdk.java.net/browse/JDK-7069190
 java -Duser.home=$HOME \
