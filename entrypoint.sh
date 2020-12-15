@@ -34,6 +34,9 @@ sleep 2
 echo "Finding pom files under $HOME/.m2/repository"
 find $HOME/.m2/repository -name "gax*.pom"
 
+echo "Changing directory to $GITHUB_WORKSPACE"
+cd $GITHUB_WORKSPACE
+
 # Java's user.home is not via $HOME by default https://bugs.openjdk.java.net/browse/JDK-7069190
 java -Duser.home=$HOME \
     -jar /cloud-opensource-java/linkage-monitor/target/linkage-monitor-*-all-deps.jar \
