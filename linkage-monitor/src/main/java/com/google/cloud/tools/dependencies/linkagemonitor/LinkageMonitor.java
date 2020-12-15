@@ -188,9 +188,10 @@ public class LinkageMonitor {
       try {
         ModelBuildingResult modelBuildingResult = modelBuilder.build(modelRequest);
         Model model = modelBuildingResult.getEffectiveModel();
-        String key = model.getGroupId() + ":" + model.getArtifactId();
-        artifactToVersion.put(key, model.getVersion());
-        logger.info("Found local artifact "+key + " => " + model.getArtifactId());
+        String versionlessCoordinates = model.getGroupId() + ":" + model.getArtifactId();
+        String version = model.getVersion();
+        artifactToVersion.put(versionlessCoordinates, version);
+        logger.info("Found local artifact "+versionlessCoordinates + " => " + version);
       } catch (ModelBuildingException ex) {
         // Maven may fail to build pom.xml files found in irrelevant directories, such as "target"
         // and "test" directories of the project. Such failures can be ignored.
