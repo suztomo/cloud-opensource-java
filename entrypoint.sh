@@ -40,6 +40,11 @@ cd $GITHUB_WORKSPACE
 echo "Searching for pom files (pom.xml) under current working directory"
 find . -name 'pom.xml'
 
+echo "Content of current working directory"
+ls -al
+
+sleep 2
+
 # Java's user.home is not via $HOME by default https://bugs.openjdk.java.net/browse/JDK-7069190
 java -Duser.home=$HOME \
     -jar /cloud-opensource-java/linkage-monitor/target/linkage-monitor-*-all-deps.jar \
