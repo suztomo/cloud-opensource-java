@@ -1,5 +1,7 @@
 FROM ubuntu:18.04
 
+LABEL org.opencontainers.image.source https://github.com/suztomo/cloud-opensource-java
+
 RUN apt-get update
 RUN apt-get -y install git openjdk-8-jdk maven
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
