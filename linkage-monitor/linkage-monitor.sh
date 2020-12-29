@@ -43,10 +43,5 @@ find . -name 'pom.xml'
 echo "Content of current working directory"
 ls -al
 
-sleep 2
-
-# Java's user.home is not via $HOME by default https://bugs.openjdk.java.net/browse/JDK-7069190
-java -Duser.home=$HOME \
-    -jar /cloud-opensource-java/linkage-monitor/target/linkage-monitor-*-all-deps.jar \
-    com.google.cloud:libraries-bom
+java -jar /tmp/linkage-monitor-*-all-deps.jar com.google.cloud:libraries-bom
 
