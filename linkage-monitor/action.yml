@@ -5,7 +5,7 @@ runs:
   steps: 
     - id: download-linkage-monitor
       # We'll need to specify a version when downloading Linkage Monitor
-      run: >
+      run: |
         curl --output /tmp/linkage-monitor-latest-all-deps.jar \
         "https://storage.googleapis.com/cloud-opensource-java-linkage-monitor/linkage-monitor-latest-all-deps.jar"
       shell: bash
