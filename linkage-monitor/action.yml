@@ -18,7 +18,10 @@ runs:
       run: echo "::set-output name=random-id::$(echo $RANDOM)"
       shell: bash
     - id: download-linkage-monitor
-      run: curl --output /tmp/linkage-monitor-latest-all-deps.jar "https://storage.googleapis.com/cloud-opensource-java-linkage-monitor/linkage-monitor-latest-all-deps.jar"
+      # We'll need to specify a version when downloading Linkage Monitor
+      run: >
+        curl --output /tmp/linkage-monitor-latest-all-deps.jar \
+        https://storage.googleapis.com/cloud-opensource-java-linkage-monitor/linkage-monitor-latest-all-deps.jar
       shell: bash
     - run: ${{ github.action_path }}/linkage-monitor.sh
       shell: bash
