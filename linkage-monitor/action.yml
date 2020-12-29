@@ -1,22 +1,8 @@
-name: 'Hello World'
-description: 'Greet someone'
-inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
-    required: true
-    default: 'World'
-outputs:
-  random-number: 
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-id }}
+name: 'Linkage Monitor'
+description: 'Checks the compatibility of the library with the latest Libraries BOM'
 runs:
   using: "composite"
   steps: 
-    - run: echo Hello ${{ inputs.who-to-greet }}.
-      shell: bash
-    - id: random-number-generator
-      run: echo "::set-output name=random-id::$(echo $RANDOM)"
-      shell: bash
     - id: download-linkage-monitor
       # We'll need to specify a version when downloading Linkage Monitor
       run: >
