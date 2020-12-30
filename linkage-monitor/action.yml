@@ -4,7 +4,7 @@ runs:
   using: "composite"
   steps:
     - name: Build Linkage Monitor
-      run: ./mvnw -B -V install -pl dependencies,linkage-monitor -Dmaven.test.skip -Dinvoker.skip
+      run: ./mvnw -q -B -V install -pl dependencies,linkage-monitor -Dmaven.test.skip -Dinvoker.skip
       shell: bash
       working-directory: ${{ github.action_path }}/..
     - run: ${{ github.action_path }}/linkage-monitor.sh
