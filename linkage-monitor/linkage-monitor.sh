@@ -1,11 +1,15 @@
 #!/bin/sh -l
 
 echo "Using JAVA_HOME: $JAVA_HOME"
+echo -n "at "
 which java
 java -version
 
 echo "Changing directory to $GITHUB_WORKSPACE"
 cd $GITHUB_WORKSPACE
+
+echo "Listing environment variable"
+printenv
 
 echo "Searching for pom files (pom.xml) under current working directory"
 find . -name 'pom.xml'
