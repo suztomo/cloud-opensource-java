@@ -4,12 +4,8 @@ runs:
   using: "composite"
   steps:
     - name: Build Linkage Monitor
-      run: ./mvnw install -pl dependencies,linkage-monitor -Dmaven.test.skip -Dinvoker.skip
+      run: ./mvnw -B -V install -pl dependencies,linkage-monitor -Dmaven.test.skip -Dinvoker.skip
       shell: bash
       working-directory: ${{ github.action_path }}/..
-    - name: Relocate the uber JAR to /tmp
-      run: mv target/linkage-monitor-*-all-deps.jar /tmp/
-      shell: bash
-      working-directory: ${{ github.action_path }}
     - run: ${{ github.action_path }}/linkage-monitor.sh
       shell: bash

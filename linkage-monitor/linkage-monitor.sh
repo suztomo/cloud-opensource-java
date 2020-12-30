@@ -17,5 +17,4 @@ find . -name 'pom.xml'
 echo "Content of current working directory"
 ls -al
 
-java -jar /tmp/linkage-monitor-*-all-deps.jar com.google.cloud:libraries-bom
-
+java -jar ${GITHUB_ACTION_PATH}/target/linkage-monitor-*-all-deps.jar com.google.cloud:libraries-bom
