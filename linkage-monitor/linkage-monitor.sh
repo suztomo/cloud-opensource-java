@@ -1,5 +1,7 @@
 #!/bin/sh -l
 
+set -e
+
 echo "Using JAVA_HOME: $JAVA_HOME"
 echo -n "at "
 which java
