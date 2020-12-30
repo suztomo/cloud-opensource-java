@@ -1,8 +1,5 @@
 #!/bin/sh -l
 
-# This does not exist
-source common.sh
-
 echo "Using JAVA_HOME: $JAVA_HOME"
 echo -n "at "
 which java
