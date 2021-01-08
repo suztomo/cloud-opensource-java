@@ -2,12 +2,12 @@ name: 'Linkage Monitor'
 description: 'Checks the compatibility of the library with the latest Libraries BOM'
 runs:
   using: "composite"
-  steps: 
-    - id: download-linkage-monitor
-      # We'll need to specify a version when downloading Linkage Monitor
+  steps:
+    - name: Download Linkage Monitor uber JAR
+      # scripts/release.sh updates the version part in the URL
       run: |
-        curl --output /tmp/linkage-monitor-latest-all-deps.jar \
+        curl --output /tmp/linkage-monitor.jar \
         "https://storage.googleapis.com/cloud-opensource-java-linkage-monitor/linkage-monitor-latest-all-deps.jar"
       shell: bash
-    - run: ${{ github.action_path }}/linkage-monitor.sh
+    - run: java -jar /tmp/linkage-monitor.jar com.google.cloud:libraries-bom
       shell: bash
