@@ -170,6 +170,14 @@ public class LinkageProblemTest {
   }
 
   @Test
+  public void testFormatLinkageProblemsInGraphviz() {
+    assertEquals(
+        "digraph G {\n" +
+        "}",
+        LinkageProblem.formatLinkageProblemsInGraphviz(linkageProblems));
+  }
+
+  @Test
   public void testGroupBySymbolProblems() {
     ImmutableMap<String, ImmutableSet<String>> grouped =
         LinkageProblem.groupBySymbolProblem(linkageProblems);

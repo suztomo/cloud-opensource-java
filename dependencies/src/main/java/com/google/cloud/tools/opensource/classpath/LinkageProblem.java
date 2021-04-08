@@ -17,17 +17,35 @@
 package com.google.cloud.tools.opensource.classpath;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 import com.google.cloud.tools.opensource.dependencies.Artifacts;
 import com.google.cloud.tools.opensource.dependencies.DependencyPath;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.MultimapBuilder.SetMultimapBuilder;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
+import com.google.common.io.FileWriteMode;
+import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -230,6 +248,129 @@ public abstract class LinkageProblem {
     }
 
     return output.toString();
+  }
+
+  /**
+   * Writes graphviz file that shows {@code linkageProblems}.
+   */
+  public static void formatLinkageProblemsInGraphvizFile(Set<LinkageProblem> linkageProblems,
+      Path output) throws IOException {
+    String graphVizContent = formatLinkageProblemsInGraphviz(linkageProblems);
+    Files.asCharSink(output.toFile(), StandardCharsets.UTF_8).write(graphVizContent);
+  }
+
+  /**
+   * Creates a graph depicting linkage errors in Graphviz's Dot file format.
+   */
+  @VisibleForTesting
+  static String formatLinkageProblemsInGraphviz(
+      Set<LinkageProblem> linkageProblems) {
+    StringBuilder builder = new StringBuilder("digraph G {\n");
+    builder.append("  rankdir=LR;");
+    HashMultimap<String, String> artifactToSourceClassName = HashMultimap.create();
+
+    linkageProblems.stream().map(LinkageProblem::getSourceClass).distinct().forEach(sourceClassFile -> {
+      String binaryName = sourceClassFile.getBinaryName();
+      String artifactCoordinates = Artifacts.toCoordinates(sourceClassFile.getClassPathEntry().getArtifact());
+      artifactToSourceClassName.put(artifactCoordinates, shortClassName(binaryName));
+    });
+
+    int artifactCount=0;
+    int symbolCount = 0;
+    Map<String, String> symbolNameToSymbolId = new HashMap<>();
+    Map<String, String> classNameToClassId = new HashMap<>();
+
+    HashMultimap<String, String> artifactToTargetClassName = HashMultimap.create();
+
+    for (LinkageProblem linkageProblem : linkageProblems) {
+      Symbol symbol = shortSymbol(linkageProblem.getSymbol());
+      ClassFile targetClass = linkageProblem.getTargetClass();
+      String targetArtifactName = (targetClass == null || targetClass.getClassPathEntry().getArtifact() == null) ? "undefined" :
+          Artifacts.toCoordinates(targetClass.getClassPathEntry().getArtifact());
+
+      artifactToTargetClassName.put(targetArtifactName, symbol.toString());
+    }
+
+    Set<String> combinedArtifactCoordinates = new HashSet<>();
+    combinedArtifactCoordinates.addAll(artifactToSourceClassName.keySet());
+    combinedArtifactCoordinates.addAll(artifactToTargetClassName.keySet());
+
+    for (String artifactCoordinates : combinedArtifactCoordinates) {
+
+      builder.append("  subgraph cluster_"+artifactCount+ " {\n");
+      artifactCount++;
+      builder.append("    color=lightgrey;\n");
+      builder.append("    label = \""+artifactCoordinates+"\";\n");
+
+      Set<String> classNames = artifactToSourceClassName.get(artifactCoordinates);
+      for (String className : classNames) {
+        String classId = "class"+symbolCount;
+        symbolCount++;
+        builder.append(String.format("    %s [shape=plaintext,fontsize=9,label=\"%s\"];\n",
+            classId, className));
+        classNameToClassId.put(className, classId);
+      }
+
+      Set<String> symbolNames = artifactToTargetClassName.get(artifactCoordinates);
+      for (String symbolName : symbolNames) {
+        String symbolId = "sym"+symbolCount;
+        symbolCount++;
+        builder.append(String.format("    %s [shape=ellipse,fontsize=9,label=\"%s\"];\n", symbolId, symbolName));
+        symbolNameToSymbolId.put(symbolName, symbolId);
+      }
+
+      builder.append("  }\n");
+    }
+
+    for (LinkageProblem linkageProblem : linkageProblems) {
+      String targetSymbolName = shortSymbol(linkageProblem.getSymbol()).toString();
+      String sourceClassName = shortClassName(linkageProblem.getSourceClass().getBinaryName());
+      String symbolId = symbolNameToSymbolId.get(targetSymbolName);
+      String classId = classNameToClassId.get(sourceClassName);
+      String arrowStyle = "solid";
+      String arrowColor = "black";
+      if (linkageProblem instanceof ClassNotFoundProblem) {
+        arrowStyle = "dotted";
+        arrowColor = "black";
+      } else if (linkageProblem instanceof SymbolNotFoundProblem) {
+        arrowColor = "orange";
+      } else {
+        arrowColor = "red";
+      }
+
+      builder.append("  "+classId+" -> "+symbolId+" [style="+arrowStyle+",color="+arrowColor+"];\n");
+    }
+
+    builder.append("}");
+    return builder.toString();
+  }
+
+  private static String shortClassName(String classBinaryName) {
+    List<String> split = Splitter.on('.').splitToList(classBinaryName);
+    StringBuilder ret = new StringBuilder();
+    for (int i=0; i<split.size()-1; ++i) {
+      ret.append(split.get(i).charAt(0));
+      ret.append('.');
+    }
+    ret.append(split.get(split.size()-1));
+    return ret.toString();
+  }
+
+  private static Symbol shortSymbol(Symbol symbol) {
+    if (symbol instanceof ClassSymbol) {
+      return new ClassSymbol(shortClassName(symbol.getClassBinaryName()));
+    } else if (symbol instanceof MethodSymbol) {
+      MethodSymbol methodSymbol = (MethodSymbol) symbol;
+      return new MethodSymbol(shortClassName(symbol.getClassBinaryName()),
+          methodSymbol.getName(), methodSymbol.getDescriptor(),
+          methodSymbol.isInterfaceMethod());
+    } else if (symbol instanceof FieldSymbol) {
+FieldSymbol fieldSymbol = (FieldSymbol) symbol;
+return new FieldSymbol(shortClassName(symbol.getClassBinaryName()),
+    fieldSymbol.getName(),fieldSymbol.getDescriptor());
+    } else {
+      return symbol;
+    }
   }
 
   private static String dependencyPathsOfProblematicJars(

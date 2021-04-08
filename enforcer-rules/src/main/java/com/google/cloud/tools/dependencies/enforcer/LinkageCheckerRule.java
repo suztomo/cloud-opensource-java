@@ -233,6 +233,11 @@ public class LinkageCheckerRule extends AbstractNonCacheableEnforcerRule {
                   errorCount,
                   foundError,
                   LinkageProblem.formatLinkageProblems(linkageProblems, classPathResult));
+
+          Path graphOutput = Paths.get("linkage_error.gv");
+          LinkageProblem.formatLinkageProblemsInGraphvizFile(linkageProblems, graphOutput);
+          logger.info("Wrote graphviz file: " + graphOutput.toAbsolutePath());
+
           if (getLevel() == WARN) {
             logger.warn(message);
           } else {
