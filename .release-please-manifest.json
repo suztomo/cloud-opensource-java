@@ -1,5 +1,6 @@
 
    {
      ".": "1.5.15",
-     "boms/gcp-lts-bom": "9.0.1"
-   }
+     "boms/gcp-lts-bom": "9.0.1",
+     "boms/cloud-lts-bom": "0.1.0"
+}
